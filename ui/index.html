@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cronguard — narrowcast.dev</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1><a href="/" id="logo">cronguard</a></h1>
+    <nav>
+      <span id="last-updated" class="text-muted"></span>
+      <button id="btn-refresh" class="btn">Refresh</button>
+      <button id="btn-add-check" class="btn btn-primary">Add check</button>
+      <button id="btn-settings" class="btn">Settings</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="check-list">
+      <div class="filters">
+        <input type="text" id="filter-name" placeholder="Search by name...">
+        <select id="filter-status">
+          <option value="">All statuses</option>
+          <option value="up">Up</option>
+          <option value="late">Late</option>
+          <option value="down">Down</option>
+          <option value="new">New</option>
+        </select>
+      </div>
+      <table id="checks-table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Name</th>
+            <th>Schedule</th>
+            <th>Last Ping</th>
+            <th>Next Expected</th>
+            <th>Ping URL</th>
+          </tr>
+        </thead>
+        <tbody id="checks-body"></tbody>
+      </table>
+      <p id="no-checks" class="empty-state" hidden>No checks yet. Create one to get started.</p>
+    </section>
+
+    <!-- Add/Edit Check Form -->
+    <section id="check-form" class="panel" hidden>
+      <h2 id="form-title">Add check</h2>
+      <form id="form">
+        <input type="hidden" id="form-id">
+        <label>
+          Name
+          <input type="text" id="form-name" required placeholder="nightly backup">
+        </label>
+        <label>
+          Schedule (cron)
+          <input type="text" id="form-schedule" required placeholder="0 3 * * *">
+        </label>
+        <label>
+          Grace period
+          <input type="text" id="form-grace" value="5m" placeholder="5m">
+        </label>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" id="form-cancel" class="btn">Cancel</button>
+        </div>
+      </form>
+      <div id="ping-info" hidden>
+        <h3>Ping URL</h3>
+        <div class="ping-url-row">
+          <code id="ping-url"></code>
+          <button class="btn btn-small" id="copy-ping-url">Copy</button>
+        </div>
+        <pre id="ping-snippets"></pre>
+      </div>
+    </section>
+
+    <!-- Check Detail -->
+    <section id="check-detail" class="panel" hidden>
+      <button id="detail-back" class="btn btn-back">&larr; Back</button>
+      <div class="detail-header">
+        <h2 id="detail-name"></h2>
+        <span id="detail-status" class="status-badge"></span>
+      </div>
+      <div class="detail-meta">
+        <span id="detail-schedule"></span>
+      </div>
+      <div class="detail-actions">
+        <button id="detail-edit" class="btn">Edit</button>
+        <button id="detail-delete" class="btn btn-danger">Delete</button>
+      </div>
+      <div id="detail-output-section">
+        <h3>Last output</h3>
+        <pre id="detail-output"></pre>
+      </div>
+      <div id="detail-alerts-section">
+        <h3>Alert destinations</h3>
+        <ul id="detail-alerts-list"></ul>
+        <form id="add-alert-form" class="inline-form">
+          <select id="alert-type">
+            <option value="webhook">Webhook</option>
+            <option value="email">Email</option>
+          </select>
+          <input type="text" id="alert-target" placeholder="https://hooks.slack.com/..." required>
+          <button type="submit" class="btn btn-small">Add</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings-panel" class="panel" hidden>
+      <h2>SMTP Settings</h2>
+      <details class="smtp-help">
+        <summary>Gmail setup guide</summary>
+        <ol>
+          <li>Enable <strong>2-Step Verification</strong> on your Google account</li>
+          <li>Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">App Passwords</a> and generate one for "Mail"</li>
+          <li>Use these settings:</li>
+        </ol>
+        <table class="help-table">
+          <tr><td>SMTP Host</td><td><code>smtp.gmail.com</code></td></tr>
+          <tr><td>SMTP Port</td><td><code>587</code></td></tr>
+          <tr><td>Username</td><td>your Gmail address</td></tr>
+          <tr><td>Password</td><td>the 16-character app password</td></tr>
+          <tr><td>From address</td><td>your Gmail address</td></tr>
+        </table>
+      </details>
+      <form id="settings-form">
+        <label>
+          SMTP Host
+          <input type="text" id="smtp-host" placeholder="smtp.example.com">
+        </label>
+        <label>
+          SMTP Port
+          <input type="number" id="smtp-port" value="587">
+        </label>
+        <label>
+          Username
+          <input type="text" id="smtp-user">
+        </label>
+        <label>
+          Password
+          <input type="password" id="smtp-password">
+        </label>
+        <label>
+          From address
+          <input type="email" id="smtp-from" placeholder="cronguard@example.com">
+        </label>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" id="settings-cancel" class="btn">Cancel</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>cronguard &mdash; self-hosted cron job monitor by <a href="https://narrowcast.dev">narrowcast.dev</a></p>
+    <p><a href="https://github.com/narrowcastdev/cronguard" aria-label="GitHub"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

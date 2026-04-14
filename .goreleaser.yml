@@ -1,0 +1,38 @@
+version: 2
+builds:
+  - main: ./cmd/cronguard
+    binary: cronguard
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+dockers:
+  - image_templates:
+      - "narrowcastdev/cronguard:{{ .Version }}"
+      - "narrowcastdev/cronguard:latest"
+    dockerfile: Dockerfile.release
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title=cronguard"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+
+changelog:
+  sort: asc

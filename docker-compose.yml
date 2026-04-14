@@ -1,0 +1,21 @@
+services:
+  cronguard:
+    image: narrowcastdev/cronguard:latest
+    container_name: cronguard
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8099:8099"
+    volumes:
+      - cronguard-data:/data
+    env_file:
+      - .env  # CRONGUARD_PASSWORD=your-secret-here
+
+  # Example: a backup job that pings cronguard after each run
+  backup:
+    image: alpine:latest
+    command: sh -c '/backup.sh && curl -fsS http://cronguard:8099/ping/nightly-backup'
+    depends_on:
+      - cronguard
+
+volumes:
+  cronguard-data:

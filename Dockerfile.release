@@ -1,0 +1,5 @@
+FROM alpine:3.20
+RUN apk add --no-cache ca-certificates && mkdir -p /data
+COPY cronguard /usr/local/bin/cronguard
+EXPOSE 8099
+ENTRYPOINT ["cronguard", "--data", "/data/cronguard.db"]
