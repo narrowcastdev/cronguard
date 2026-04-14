@@ -12,16 +12,16 @@ import (
 
 // Check represents a monitored cron job.
 type Check struct {
-	ID        int64
-	Name      string
-	Slug      string
-	Schedule  string
-	Grace     string
-	LastPing  *time.Time
+	ID         int64
+	Name       string
+	Slug       string
+	Schedule   string
+	Grace      string
+	LastPing   *time.Time
 	LastOutput string
-	LastFail  *time.Time
-	Alerted   bool
-	CreatedAt time.Time
+	LastFail   *time.Time
+	Alerted    bool
+	CreatedAt  time.Time
 }
 
 // AlertDest is an alert destination (webhook URL or email address).

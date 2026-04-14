@@ -14,5 +14,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23"
+      - run: test -z "$(gofmt -s -l .)"
+      - run: go vet ./...
       - run: go test ./...
       - run: go build ./cmd/cronguard
