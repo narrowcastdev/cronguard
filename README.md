@@ -4,11 +4,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/narrowcastdev/cronguard)](https://goreportcard.com/report/github.com/narrowcastdev/cronguard)
 
-Self-hosted cron job monitor. Single binary. No dependencies.
+**Self-hosted cron job monitor** — your cron jobs ping cronguard over HTTP. If a ping doesn't arrive on schedule, you get alerted via webhook or email. Dead man's switch pattern, single binary, no dependencies.
 
-Your cron jobs ping cronguard over HTTP. If a ping doesn't arrive on schedule, you get alerted via webhook or email. Dead man's switch pattern — if it stops hearing from your jobs, something is wrong.
+Built for self-hosters and homelab operators running 10-50 cron jobs who want to know when something stops running.
 
-**Built for self-hosters and homelab operators** running 10-50 cron jobs who want to know when something stops running.
+📖 **[How to Monitor Cron Jobs: The Complete Guide](https://narrowcast.dev/blog/how-to-monitor-cron-jobs/)** — the dead man's switch pattern, setup steps, and tool comparisons.
 
 ## Quick Start
 
